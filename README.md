@@ -8,10 +8,13 @@ This was made to to see if I was getting FPS spikes.
 
 How to use?
 
-Like any other PGEX extension you include the file in your project and include the line...
+Like any other PGEX extension you include the file in your project and include the line:
+
   #define OLC_PGEX_Gruffler_FPS_Chart_H
-...once and only once in a .cpp file. 
-Usually this is done in a .cpp file just before including the olcPixelGameEngine itself.
+
+-once and only once in a .cpp file. 
+
+Usually this is done in a .cpp file just after including the olcPixelGameEngine itself.
 Eg.
   #define OLC_PGE_APPLICATION
   #include "olcPixelGameEngine.h"
