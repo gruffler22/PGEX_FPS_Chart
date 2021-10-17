@@ -2,10 +2,12 @@
 PGEX Extension for OLC Pixel Game Engine
 
 What is this?
+
 This is an extension to the olcPixelGameEngine, which provides the ability to see via a chart overlay the FPS performance on a frame by frame and second by second basis.
 This was made to to see if I was getting FPS spikes.
 
 How to use?
+
 Like any other PGEX extension you include the file in your project and include the line...
   #define OLC_PGEX_Gruffler_FPS_Chart_H
 ...once and only once in a .cpp file. 
@@ -29,6 +31,8 @@ It only has two exposed members:
 It all should just work in the background (via the olcPixelGameEngine).
 
 Enjoy!
+
+
 
 License (OLC-3)
 (The licence is inherited from the OneLoneCoder Pixel Game Engine.)
