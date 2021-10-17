@@ -30,6 +30,12 @@ It only has two exposed members:
 
 It all should just work in the background (via the olcPixelGameEngine).
 
+The chart itself rescales dynamically on the last minutes worth of data.
+The individual frames are plotted realtime in the foreground.
+The seconds are summarised as candles in the background.
+
+Made for my own uses but maybe someone else will find it useful!
+
 Enjoy!
 
 
