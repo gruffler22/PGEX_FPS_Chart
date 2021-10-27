@@ -88,6 +88,7 @@ namespace olc
 		FPSChart() : PGEX(true)
 		{
 			_show = true;
+			_first = true;
 			_canvas = new olc::Sprite(240, 100);
 			_result = new olc::Decal(_canvas);
 			_ticksIter = 0;
@@ -127,6 +128,7 @@ namespace olc
 
 	private:
 		bool _show;
+		bool _first;	//Ignore first frame - throws data due to init() taking forever
 		olc::Sprite* _canvas;
 		olc::Decal* _result;
 		float _ticks[240];
@@ -159,40 +161,47 @@ namespace olc
 
 		virtual void OnBeforeUserUpdate(float& fElapsedTime) 
 		{ 
-			//record new tick
-			float currentFPS = 1.0f / fElapsedTime;
-			_ticks[_ticksIter] = currentFPS;
-			_ticksIter++;
-
-			//Record highest value
-			if (currentFPS > _highestFPS)
-				_highestFPS = currentFPS;
-
-			//Cycle tick buffer
-			if (_ticksIter >= 240)
+			if (_first)
 			{
-				_ticksIter = 0;
-
-				//Check if we can reduce range
-				_highestFPS = 0.0f;
-				for (int i = 0; i < 240; i++)
-					_highestFPS = std::max(_ticks[i], _highestFPS);
-				for (int i = 0; i < 60; i++)
-					_highestFPS = std::max(_seconds[i].high, _highestFPS);
+				//skip - initialisation took forever and messes with chart
+				_first = false;
 			}
+			else {
+				//record new tick
+				float currentFPS = 1.0f / fElapsedTime;
+				_ticks[_ticksIter] = currentFPS;
+				_ticksIter++;
 
-			_secSum += fElapsedTime;
-			_wipInterval.high = std::max(_wipInterval.high, currentFPS);
-			_wipInterval.low = std::min(_wipInterval.low, currentFPS);
-			while (_secSum > 1.0f)
-			{
-				_secSum -= 1.0f;
-				_wipInterval.out = currentFPS;
-				_seconds[_secsIter] = _wipInterval;
-				_secsIter++;
-				if (_secsIter >= 60)
-					_secsIter = 0;
-				_wipInterval.in = _wipInterval.high = _wipInterval.low = currentFPS;
+				//Record highest value
+				if (currentFPS > _highestFPS)
+					_highestFPS = currentFPS;
+
+				//Cycle tick buffer
+				if (_ticksIter >= 240)
+				{
+					_ticksIter = 0;
+
+					//Check if we can reduce range
+					_highestFPS = 0.0f;
+					for (int i = 0; i < 240; i++)
+						_highestFPS = std::max(_ticks[i], _highestFPS);
+					for (int i = 0; i < 60; i++)
+						_highestFPS = std::max(_seconds[i].high, _highestFPS);
+				}
+
+				_secSum += fElapsedTime;
+				_wipInterval.high = std::max(_wipInterval.high, currentFPS);
+				_wipInterval.low = std::min(_wipInterval.low, currentFPS);
+				while (_secSum > 1.0f)
+				{
+					_secSum -= 1.0f;
+					_wipInterval.out = currentFPS;
+					_seconds[_secsIter] = _wipInterval;
+					_secsIter++;
+					if (_secsIter >= 60)
+						_secsIter = 0;
+					_wipInterval.in = _wipInterval.high = _wipInterval.low = currentFPS;
+				}
 			}
 		}
 
@@ -254,8 +263,8 @@ namespace olc
 					}
 				}
 				else {
-					//One line per 50 FPS
-					float targetFPS = 50.0f;
+					//One line per 100 FPS
+					float targetFPS = 100.0f;
 
 					while (targetFPS <= _highestFPS)
 					{
@@ -264,7 +273,7 @@ namespace olc
 						PGEX::pge->DrawLine({ 0, y }, { 240, y }, olc::DARK_CYAN);
 						PGEX::pge->DrawString({ 0,y }, std::to_string(int(targetFPS)), olc::CYAN);
 						//increment fps
-						targetFPS += 50.0f;
+						targetFPS += 100.0f;
 					}
 				}
 
